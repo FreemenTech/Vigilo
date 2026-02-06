@@ -1,0 +1,77 @@
+[Unit]
+Description=Vigilo File Integrity Monitoring Service
+Documentation=https://github.com/FreemenTech/Vigilo
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=/opt/vigilo/main.py
+
+[Service]
+Type=simple
+User=vigilo
+Group=vigilo
+WorkingDirectory=/opt/vigilo
+ExecStart=/usr/bin/python3 /opt/vigilo/main.py start
+ExecReload=/bin/kill -HUP $MAINPID
+
+# Restart policy
+Restart=on-failure
+RestartSec=10
+StartLimitInterval=60
+StartLimitBurst=3
+
+# Performance
+Nice=-5
+CPUQuota=20%
+MemoryLimit=100M
+TasksMax=50
+
+# Security - Filesystem
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/vigilo
+ReadOnlyPaths=/etc /var/log
+PrivateTmp=true
+NoNewPrivileges=true
+
+# Security - Network
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+# Security - Capabilities
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+# Security - System Calls
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+SystemCallErrorNumber=EPERM
+
+# Security - Devices
+PrivateDevices=true
+DevicePolicy=closed
+
+# Security - Kernel
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+
+# Security - Misc
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+ProtectHostname=true
+ProtectClock=true
+RemoveIPC=true
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=vigilo
+
+# Environment
+Environment="PYTHONUNBUFFERED=1"
+Environment="VIGILO_CONFIG=/opt/vigilo/file_info.json"
+Environment="VIGILO_LOG_LEVEL=INFO"
+
+[Install]
+WantedBy=multi-user.target

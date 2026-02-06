@@ -1,0 +1,64 @@
+# VIGILO — File Integrity Monitoring Tool
+# Python Dependencies
+# 
+# Installation:
+#   pip install -r requirements.txt --break-system-packages
+#
+# Note: Use --break-system-packages on Debian/Ubuntu 24+ with
+# externally managed Python environments
+
+# Core Dependencies
+# -----------------
+
+# Filesystem event monitoring (inotify wrapper)
+watchdog>=3.0.0
+
+# Date/time utilities for alert retention
+python-dateutil>=2.8.0
+
+requests>=2.31.0  # for remote alerts
+
+
+# Optional Dependencies (for future features)
+# --------------------------------------------
+
+# Email notifications (uncomment when implementing)
+# smtplib is built-in to Python, no installation needed
+
+# HTTP requests for remote alerts (uncomment when implementing)
+# requests>=2.31.0
+
+# For advanced scheduling (uncomment if adding cron-like features)
+# schedule>=1.2.0
+
+
+# Development Dependencies (optional)
+# ------------------------------------
+
+# Code formatting
+# black>=23.0.0
+
+# Linting
+# pylint>=3.0.0
+# flake8>=6.0.0
+
+# Type checking
+# mypy>=1.0.0
+
+# Testing
+# pytest>=7.0.0
+# pytest-cov>=4.0.0
+
+
+# System Requirements
+# -------------------
+# 
+# OS: Linux (tested on Ubuntu 24.04)
+# Python: 3.8+
+# 
+# Optional system packages:
+#   - libnotify-bin (for desktop notifications)
+#     sudo apt-get install libnotify-bin
+# 
+# For running as service:
+#   - systemd (typically pre-installed on modern Linux)

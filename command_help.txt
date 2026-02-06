@@ -1,0 +1,170 @@
+════════════════════════════════════════════════════════════════════════════════
+  VIGILO — File Integrity Monitoring Tool
+  Real-time detection of unauthorized file changes
+════════════════════════════════════════════════════════════════════════════════
+
+USAGE:
+    vigilo <command> [options]
+
+CORE COMMANDS:
+
+    add <file> [options]        Add file(s) to monitoring
+    remove <file>               Remove file from monitoring
+    list                        List all monitored files
+    info <file>                 Show detailed file information
+    start                       Start monitoring service
+    help                        Show this help text
+
+────────────────────────────────────────────────────────────────────────────────
+ADDING FILES
+────────────────────────────────────────────────────────────────────────────────
+
+Quick Start:
+    vigilo add /etc/nginx/nginx.conf --preset full --alert system
+
+Presets:
+    --preset full               Monitor all events (modify, delete, move, 
+                                permissions, add)
+    --preset default            Monitor modify, delete, permissions
+
+Custom Events:
+    -m, --modify                Detect file modifications
+    -d, --delete                Detect file deletions
+    -v, --move                  Detect file moves/renames
+    -p, --permissions           Detect permission changes
+    -a, --add                   Detect new files (for directories)
+
+Examples:
+    # Monitor all events with desktop notifications
+    vigilo add /etc/passwd --preset full --alert system
+
+    # Monitor specific events only
+    vigilo add /var/www/index.html -m -d -p --alert log
+
+    # Add multiple files at once
+    vigilo add file1.txt file2.txt file3.txt --preset default
+
+────────────────────────────────────────────────────────────────────────────────
+ALERT MODES
+────────────────────────────────────────────────────────────────────────────────
+
+Available Modes:
+    --alert system              Desktop notifications (Linux notify-send)
+    --alert log                 Silent logging only (default)
+    --alert email               Email alerts (requires SMTP config)
+    --alert remote              Webhook/API push (requires URL config)
+    --alert silent              No alerts at all
+
+Configure Alerts:
+    # Change alert mode for existing file
+    vigilo alert set /etc/passwd --method email
+
+    # Test all configured alert channels
+    vigilo alert test
+
+Email Setup (for --alert email):
+    export SMTP_HOST=smtp.gmail.com
+    export SMTP_PORT=587
+    export SMTP_USER=alerts@example.com
+    export SMTP_PASS=your_app_password
+    export ALERT_EMAIL_TO=admin@example.com
+
+Remote Setup (for --alert remote):
+    export REMOTE_ALERT_URL=https://your-server.com/api/alerts
+    export REMOTE_ALERT_TOKEN=your_secret_token
+
+────────────────────────────────────────────────────────────────────────────────
+MANAGING EVENTS
+────────────────────────────────────────────────────────────────────────────────
+
+Add events to existing monitoring:
+    vigilo events add /etc/nginx/nginx.conf move permissions
+
+Remove events:
+    vigilo events remove /etc/passwd move
+
+Replace all events:
+    vigilo events set /var/www/html modify delete
+
+────────────────────────────────────────────────────────────────────────────────
+SERVICE MANAGEMENT
+────────────────────────────────────────────────────────────────────────────────
+
+Start/Stop:
+    sudo systemctl start vigilo
+    sudo systemctl stop vigilo
+    sudo systemctl restart vigilo
+
+Check Status:
+    sudo systemctl status vigilo
+
+Enable Auto-Start:
+    sudo systemctl enable vigilo
+
+View Logs:
+    journalctl -u vigilo -f              # Real-time
+    journalctl -u vigilo --since today   # Today only
+    journalctl -u vigilo -p err          # Errors only
+
+────────────────────────────────────────────────────────────────────────────────
+EXAMPLES
+────────────────────────────────────────────────────────────────────────────────
+
+Web Server Security:
+    vigilo add /etc/nginx/nginx.conf --preset full --alert system
+    vigilo add /var/www/html -a -m --alert system
+    sudo systemctl start vigilo
+
+SSH Protection:
+    vigilo add /etc/ssh/sshd_config --preset full --alert email
+    vigilo add /root/.ssh/authorized_keys -m -a -d --alert system
+
+System Files:
+    vigilo add /etc/passwd --preset full --alert email
+    vigilo add /etc/shadow --preset full --alert email
+    vigilo add /etc/sudoers -m -p --alert system
+
+────────────────────────────────────────────────────────────────────────────────
+TROUBLESHOOTING
+────────────────────────────────────────────────────────────────────────────────
+
+No notifications appearing?
+    • Install libnotify: sudo apt-get install libnotify-bin
+    • Test manually: notify-send "Test" "Message"
+    • Use log alerts instead: vigilo alert set <file> --method log
+
+Service won't start?
+    • Check logs: journalctl -u vigilo -n 50
+    • Verify permissions: ls -l /opt/vigilo
+    • Test manually: vigilo start
+
+High CPU usage?
+    • Don't monitor high-churn files (/var/log/syslog)
+    • Use specific events only: vigilo add <file> -m -d
+
+Database corrupted?
+    • Backup: sudo cp /opt/vigilo/file_info.json ~/backup.json
+    • Reset: sudo rm /opt/vigilo/*.json
+    • Re-add files: vigilo add <file> --preset full
+
+────────────────────────────────────────────────────────────────────────────────
+FILES & LOCATIONS
+────────────────────────────────────────────────────────────────────────────────
+
+Installation:           /opt/vigilo
+Configuration:          /opt/vigilo/file_info.json
+Event Index:            /opt/vigilo/file_event.json
+Alert History:          /opt/vigilo/alert_history.json
+Service File:           /etc/systemd/system/vigilo.service
+Command:                /usr/local/bin/vigilo (symlink)
+
+────────────────────────────────────────────────────────────────────────────────
+SUPPORT
+────────────────────────────────────────────────────────────────────────────────
+
+Documentation:          /opt/vigilo/README.md
+GitHub:                 https://github.com/FreemenTech/Vigilo
+
+════════════════════════════════════════════════════════════════════════════════
+  Version 1.0.0 • MIT License • Built for the cybersecurity community
+════════════════════════════════════════════════════════════════════════════════
