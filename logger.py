@@ -15,8 +15,8 @@ _db_lock = threading.Lock()
 # ALERT HISTORY MANAGEMENT
 # =============================================================================
 
-def save_log_history(report, file="alert_history.json"):
-   
+def save_log_history(report, file="/opt/vigilo/alert_history.json"):
+        
     with _db_lock:
         all_reports = []
         
@@ -62,9 +62,9 @@ def save_log_history(report, file="alert_history.json"):
                 except OSError:
                     pass
             
-            print(f"⚠️  Error saving alert history: {e}")
+            print(f"⚠️ Error saving alert history: {e}")
 
-def show_log_history(file="alert_history.json"):
+def show_log_history(file="/opt/vigilo/alert_history.json"):
     """
     Retrieve complete alert history.
     """
@@ -88,7 +88,7 @@ def show_log_history(file="alert_history.json"):
         return []
 
 
-def delete_old_log_history(file="alert_history.json", retention_years=2):
+def delete_old_log_history(file="/opt/vigilo/alert_history.json", retention_years=2):
     """
     Delete alert logs older than 2year.
     """
@@ -152,7 +152,7 @@ def delete_old_log_history(file="alert_history.json", retention_years=2):
 # MONITORED FILE INFORMATION QUERIES
 # =============================================================================
 
-def show_file_monitored_info(path, file="file_info.json"):
+def show_file_monitored_info(path, file="/opt/vigilo/file_info.json"):
     """
     Retrieve detailed information about a monitored file.
     Args:
@@ -205,7 +205,7 @@ def show_file_monitored_info(path, file="file_info.json"):
     return None
 
 
-def show_all_file_monitored(file="file_info.json"):
+def show_all_file_monitored(file="/opt/vigilo/file_info.json"):
     
     all_monitored = []
     
@@ -245,7 +245,7 @@ def show_all_file_monitored(file="file_info.json"):
 # DUPLICATE DETECTION
 # =============================================================================
 
-def is_file_already_monitored(path, file="file_info.json"):
+def is_file_already_monitored(path, file="/opt/vigilo/file_info.json"):
     
     abs_path = os.path.abspath(path)
     
@@ -272,7 +272,7 @@ def is_file_already_monitored(path, file="file_info.json"):
     
     return False
 
-def get_all_monitored_paths(file="file_info.json"):
+def get_all_monitored_paths(file="/opt/vigilo/file_info.json"):
     monitored_paths = set()
     
     if not os.path.exists(file):
@@ -303,7 +303,7 @@ def get_all_monitored_paths(file="file_info.json"):
 # FILE REMOVAL OPERATIONS
 # =============================================================================
 
-def remove_monitored_file_info(path, file="file_info.json"):
+def remove_monitored_file_info(path, file="/opt/vigilo/file_info.json"):
    
     if not os.path.exists(file):
         return False
@@ -360,7 +360,7 @@ def remove_monitored_file_info(path, file="file_info.json"):
         return removed
 
 
-def remove_file_event(path, file="file_event.json"):
+def remove_file_event(path, file="/opt/vigilo/file_event.json"):
    
     if not os.path.exists(file):
         return False
@@ -411,8 +411,7 @@ def remove_file_event(path, file="file_event.json"):
 # CONFIGURATION UPDATES
 # =============================================================================
 
-def set_conf(path, change_type, new_events=None, new_alert_mode=None,
-             file_info="file_info.json", file_event="file_event.json"):
+def set_conf(path, change_type, new_events=None, new_alert_mode=None,file_info="/opt/vigilo/file_info.json", file_event="/opt/vigilo/file_event.json"):
     path = os.path.abspath(path)
     
     if not os.path.exists(file_info):
@@ -519,7 +518,7 @@ def set_conf(path, change_type, new_events=None, new_alert_mode=None,
         return True
 
 
-def regenerate_event_index(file_info="file_info.json", file_event="file_event.json"):
+def regenerate_event_index(file_info="/opt/vigilo/file_info.json", file_event="/opt/vigilo/file_event.json"):
     monitored = {}
     
     if os.path.exists(file_info):
@@ -676,7 +675,7 @@ def valid_path(path):
 # HELP SYSTEM
 # =============================================================================
 
-def show_command_help(file="command_help.txt"):
+def show_command_help(file="/opt/vigilo/command_help.txt"):
     if not os.path.exists(file):
         return "⚠️  Help file not found"
     
@@ -692,7 +691,7 @@ def show_command_help(file="command_help.txt"):
 # DATABASE INITIALIZATION
 # =============================================================================
 
-def initialize_database(file_info="file_info.json", file_event="file_event.json"):
+def initialize_database(file_info="/opt/vigilo/file_info.json", file_event="/opt/vigilo/file_event.json"):
    
     if not os.path.exists(file_info):
         with open(file_info, "w") as f:

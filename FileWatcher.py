@@ -26,8 +26,7 @@ class FileWatcher:
         "add": ["created"]
     }
     
-    def __init__(self, monitored_files_path="file_info.json", 
-                 event_file_path="file_event.json"):
+    def __init__(self, monitored_files_path="/opt/vigilo/file_info.json", event_file_path="/opt/vigilo/file_event.json"):
     
         self.monitored_files_path = monitored_files_path
         self.event_file_path = event_file_path
@@ -42,6 +41,9 @@ class FileWatcher:
         # Thread safety: Lock for write operations
         self.write_lock = threading.Lock()
         self.cache_lock = threading.Lock()
+
+        # Load baselines
+        self.load_all_baselines()  
         
         # Watchdog observer for filesystem events
         self.observer = Observer()
@@ -256,7 +258,7 @@ class FileWatcher:
         """
         Process a filtered filesystem event.
         """
-        print(f"📌 Event '{user_event}' detected on {path}")
+        print(f" Event '{user_event}' detected on {path}")
         
         # Load baseline state
         old_state = self.load_baseline(path)
@@ -350,8 +352,8 @@ class FileWatcher:
         """
         Start the file monitoring service.
         """
-        print("🔥 File Monitoring Service Started")
-        print(f"📂 Monitoring {len(self.monitored)} file(s)")
+        print("File Monitoring Service Started")
+        print(f" Monitoring {len(self.monitored)} file(s)")
         
         # Collect unique parent directories to watch
         paths_to_watch = set()
@@ -374,7 +376,7 @@ class FileWatcher:
         # Start watchdog observer
         self.observer.start()
         
-        print("✅ Monitoring active. Press CTRL+C to stop.")
+        print(" Monitoring active. Press CTRL+C to stop.")
         
         try:
             # Keep alive until interrupted
@@ -382,12 +384,12 @@ class FileWatcher:
                 time.sleep(1)
         
         except KeyboardInterrupt:
-            print("\n🛑 Shutting down monitoring service...")
+            print("\n Shutting down monitoring service...")
             self.observer.stop()
         
         # Wait for all watchdog threads to finish
         self.observer.join()
-        print("✅ Service stopped cleanly")
+        print("Service stopped cleanly")
 
 
 # =============================================================================

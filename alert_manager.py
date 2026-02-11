@@ -188,7 +188,7 @@ class AlertManager:
                 server.starttls()
                 server.login(smtp_user, smtp_pass)
                 server.send_message(msg)
-            print(f"📧 Email alert sent to {to_email}")
+            print(f"Email alert sent to {to_email}")
         
         except Exception as e:
             print(f"⚠️  Failed to send email: {e}")
@@ -203,7 +203,7 @@ class AlertManager:
         try:
             import requests
         except ImportError:
-            print("⚠️  'requests' library not installed (pip install requests)")
+            print("⚠️ 'requests' library not installed (pip install requests)")
             return
         
         # Get remote config from environment
@@ -211,7 +211,7 @@ class AlertManager:
         token = os.environ.get("REMOTE_ALERT_TOKEN")
         
         if not url or not token:
-            print("⚠️  Remote alert not configured (missing URL/token)")
+            print("⚠️ Remote alert not configured (missing URL/token)")
             return
         
         # Prepare headers
@@ -376,7 +376,7 @@ def test_alert_system():
         
         print(f"Testing {mode} alert...")
         AlertManager.dispatch(test_report, mode)
-        print(f"✅ {mode} alert dispatched")
+        print(f"{mode} alert dispatched")
     
     print("=" * 60)
-    print("✅ Alert system test complete")
+    print("Alert system test complete")

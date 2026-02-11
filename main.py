@@ -23,8 +23,8 @@ from logger import (
 from alert_manager import AlertManager, test_alert_system
 
 # Database file paths
-FILE_INFO_DB = "file_info.json"
-FILE_EVENT_DB = "file_event.json"
+FILE_INFO_DB = "/opt/vigilo/file_info.json"
+FILE_EVENT_DB = "/opt/vigilo/file_event.json"
 
 # Allowed directories for monitoring
 ALLOWED_DIRS = ["/home","/var/log","/opt","/srv","/tmp"]
@@ -77,7 +77,7 @@ def command_add(args):
     
     # Validate that at least one event is specified
     if not watch_events:
-        print("❌ No watch events specified.")
+        print("No watch events specified.")
         print("   Use --preset full/default or specify events with -m, -d, -v, -p, -a")
         sys.exit(1)
     
@@ -86,7 +86,7 @@ def command_add(args):
     # =========================================================================
     
     if not AlertManager.validate_alert_mode(args.alert):
-        print(f"❌ Invalid alert mode: {args.alert}")
+        print(f" Invalid alert mode: {args.alert}")
         print(f"   Valid modes: {', '.join(['system', 'log', 'email', 'remote', 'silent'])}")
         sys.exit(1)
     
@@ -108,18 +108,18 @@ def command_add(args):
         
         # Check if file exists
         if not os.path.exists(abs_path):
-            print(f"⚠️  File not found: {abs_path}")
+            print(f"⚠️ File not found: {abs_path}")
             continue
         
         # Security: Validate path against whitelist
         if not validate_path(abs_path, ALLOWED_DIRS):
-            print(f"⚠️  Path not allowed: {abs_path}")
-            print(f"   Allowed directories: {', '.join(ALLOWED_DIRS)}")
+            print(f"⚠️ Path not allowed: {abs_path}")
+            print(f" Allowed directories: {', '.join(ALLOWED_DIRS)}")
             continue
         
         # Check for duplicates
         if abs_path in existing_paths:
-            print(f"⚠️  Already monitoring: {abs_path}")
+            print(f"⚠️ Already monitoring: {abs_path}")
             continue
         
         # Add to database
@@ -147,7 +147,6 @@ def command_add(args):
     else:
         print("\n⚠️  No files were added")
 
-
 # =============================================================================
 # COMMAND: REMOVE
 # =============================================================================
@@ -162,7 +161,7 @@ def command_remove(args):
     
     # Check if file is being monitored
     if not is_file_already_monitored(abs_path, FILE_INFO_DB):
-        print(f"❌ File is not being monitored: {abs_path}")
+        print(f"File is not being monitored: {abs_path}")
         sys.exit(1)
     
     # Remove from both databases
@@ -170,9 +169,9 @@ def command_remove(args):
     removed_event = remove_file_event(abs_path, FILE_EVENT_DB)
     
     if removed_info or removed_event:
-        print(f"✅ Removed from monitoring: {abs_path}")
+        print(f"Removed from monitoring: {abs_path}")
     else:
-        print(f"❌ Failed to remove: {abs_path}")
+        print(f"Failed to remove: {abs_path}")
         sys.exit(1)
 
 
@@ -186,8 +185,8 @@ def command_list(args):
     monitored_files = show_all_file_monitored(FILE_INFO_DB)
     
     if not monitored_files:
-        print("ℹ️  No files are currently being monitored")
-        print("    Use 'vigilo add <file>' to start monitoring")
+        print(" No files are currently being monitored")
+        print(" Use 'vigilo add <file>' to start monitoring")
         return
     
     print(f"\nMonitoring {len(monitored_files)} file(s):")
@@ -208,7 +207,7 @@ def command_list(args):
         except (ValueError, TypeError):
             pass
         
-        print(f"\n📁 {path}")
+        print(f"\n{path}")
         print(f"   Type:       {file_type}")
         print(f"   Events:     {', '.join(events)}")
         print(f"   Alert mode: {alert_mode}")
@@ -231,7 +230,7 @@ def command_info(args):
     file_info = show_file_monitored_info(abs_path, FILE_INFO_DB)
     
     if not file_info:
-        print(f"❌ File is not being monitored: {abs_path}")
+        print(f"File is not being monitored: {abs_path}")
         sys.exit(1)
     
     # Pretty-print as JSON
@@ -322,7 +321,7 @@ def command_start(args):
     # Install signal handlers for graceful shutdown
     def signal_handler(signum, frame):
         """Handle shutdown signals gracefully."""
-        print(f"\n📡 Received signal {signum}, shutting down...")
+        print(f"\n Received signal {signum}, shutting down...")
         if _watcher_instance and _watcher_instance.observer:
             _watcher_instance.observer.stop()
         sys.exit(0)
@@ -334,7 +333,7 @@ def command_start(args):
     try:
         fw.start()
     except Exception as e:
-        print(f"\n❌ Monitoring service crashed: {e}")
+        print(f"\n Monitoring service crashed: {e}")
         sys.exit(1)
 
 
@@ -367,7 +366,7 @@ def command_events(args):
     
     # Check if file is monitored
     if not is_file_already_monitored(abs_path, FILE_INFO_DB):
-        print(f"❌ File is not being monitored: {abs_path}")
+        print(f"File is not being monitored: {abs_path}")
         sys.exit(1)
     
     # Valid event types
@@ -376,7 +375,7 @@ def command_events(args):
     # Validate events
     for event in args.events:
         if event not in valid_events:
-            print(f"❌ Invalid event type: {event}")
+            print(f"Invalid event type: {event}")
             print(f"   Valid events: {', '.join(valid_events)}")
             sys.exit(1)
     
@@ -393,9 +392,9 @@ def command_events(args):
             )
         
         if success:
-            print(f"✅ Events added: {', '.join(args.events)}")
+            print(f"Events added: {', '.join(args.events)}")
         else:
-            print(f"❌ Failed to add events")
+            print(f"Failed to add events")
             sys.exit(1)
     
     elif args.events_subcommand == "remove":
@@ -410,9 +409,9 @@ def command_events(args):
             )
         
         if success:
-            print(f"✅ Events removed: {', '.join(args.events)}")
+            print(f"Events removed: {', '.join(args.events)}")
         else:
-            print(f"❌ Failed to remove events")
+            print(f"Failed to remove events")
             sys.exit(1)
     
     elif args.events_subcommand == "set":
@@ -426,14 +425,14 @@ def command_events(args):
         )
         
         if success:
-            print(f"✅ Events set to: {', '.join(args.events)}")
+            print(f"Events set to: {', '.join(args.events)}")
         else:
-            print(f"❌ Failed to set events")
+            print(f" Failed to set events")
             sys.exit(1)
     
     else:
-        print("❌ Unknown events subcommand")
-        print("   Use 'vigilo events add', 'vigilo events remove', or 'vigilo events set'")
+        print("Unknown events subcommand")
+        print("Use 'vigilo events add', 'vigilo events remove', or 'vigilo events set'")
         sys.exit(1)
 
 # =============================================================================
@@ -708,7 +707,7 @@ def main():
         print("\n\n⚠️  Operation cancelled by user")
         sys.exit(130)
     except Exception as e:
-        print(f"\n❌ Unexpected error: {e}")
+        print(f"\n Unexpected error: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)

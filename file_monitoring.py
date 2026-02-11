@@ -46,7 +46,6 @@ class MonitoredFile:
     def compute_checksum(self):
         """
         Calculate SHA-256 checksum of the file content.
-         
         """
         if self.type != "file":
             return None
@@ -143,10 +142,9 @@ class MonitoredFile:
             "alert_mode": alert_mode,
             "added_on": datetime.now().isoformat()
         }
-        
         # Append as newline-delimited JSON
         # Security: File permissions should be 0o600 (owner-only)
-        with open("file_info.json", "a") as f:
+        with open("/opt/vigilo/file_info.json", "a") as f:
             f.write(json.dumps(data) + "\n")
     
     def get_current_info(self):
