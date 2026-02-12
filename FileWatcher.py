@@ -28,24 +28,20 @@ class FileWatcher:
     }
     
     def __init__(self, monitored_files_path="/opt/vigilo/file_info.json", event_file_path="/opt/vigilo/file_event.json"):
-    
+        
         self.monitored_files_path = monitored_files_path
         self.event_file_path = event_file_path
-        
-        # Load monitored files configuration
-        self.monitored = self.load_files_monitored()
-        
-        # Performance: Cache baseline states in memory
-        self.baseline_cache = {}
-        self.load_all_baselines()
-        
+
         # Thread safety: Lock for write operations
         self.write_lock = threading.Lock()
         self.cache_lock = threading.Lock()
 
+        # Performance: Cache baseline states in memory
+        self.baseline_cache = {}  
+        # Load monitored files configuration
+        self.monitored = self.load_files_monitored()
         # Load baselines
-        self.load_all_baselines()  
-        
+        self.load_all_baselines()   
         # Watchdog observer for filesystem events
         self.observer = Observer()
     
@@ -316,14 +312,14 @@ class FileWatcher:
             report["Recommendation"] = "Manual investigation required"
         
         # Save to alert history log
-        from vigilo2.logger import save_log_history
+        from logger import save_log_history
         save_log_history(report)
         
         # Dispatch alert (non-blocking)
         AlertManager.dispatch(report, alert_mode)
         
         # Update database state
-        from vigilo2.logger import update_files_state
+        from logger import update_files_state
         
         with self.write_lock:
             update_files_state(
